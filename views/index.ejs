@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+
+    <!-- Bootstrap CSS for layout and components -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap icons for search icon -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        /* Set background image for the body, blurred */
+        body {
+            background: url(https://picsum.photos/id/185/1920/1080/?blur=10);
+            background-size: cover;
+        }
+
+        /* Gradient background for the current weather section */
+        .gradient-custom {
+            background: -webkit-linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 236, 210, 1));
+            background: linear-gradient(to right, rgb(255 239 217), rgb(255 196 116));
+        }
+
+        /* Style for the heading */
+        .container>h1,
+        div h3 {
+            color: #8E3D06;
+        }
+
+        /* Style for the search result heading */
+        .result-heading {
+            margin: 20px 5rem;
+        }
+
+        .result-heading h3 {
+            font-size: 1rem;
+            color: #8E3D06;
+        }
+
+        /* Increase font size for city name */
+        .result-heading strong {
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main container -->
+    <div class="container">
+        <!-- Website Heading -->
+        <h1 class="text-center my-5">The Only Weather Forecast You Need</h1>
+
+        <!-- Search Form -->
+        <form action="/weather" method="GET" class="mb-5">
+            <div class="input-group justify-content-center">
+                <!-- Input for City or Pincode -->
+                <div class="col-md-4"> <!-- Limit width on medium screens and larger -->
+                    <input type="text" id="location" name="location" class="form-control"
+                        placeholder="Enter City Name or Pincode" required>
+                </div>
+                <!-- Search Button with Icon -->
+                <button type="submit" class="btn">
+                    <i class="bi bi-search"></i> <!-- Bootstrap search icon -->
+                </button>
+            </div>
+        </form>
+
+        <!-- Conditional to check if forecast data is available -->
+        <% if(forecast===0) { %>
+            <h3 class="text-center my-7">Lets Start!!</h3>
+            <% } else if (forecast !==null) { %>
+                <!-- Heading for the search result (City Name, Country) -->
+                <div class="result-heading">
+                    <h3>Results for <strong>
+                            <%= forecast[0].city %>, <%= forecast[0].country %>
+                        </strong>
+                    </h3>
+                </div>
+
+                <!-- Weather Carousel -->
+                <div id="weatherCarousel" class="carousel slide m-5" data-bs-ride="carousel">
+                    <!-- Carousel indicators for switching slides -->
+                    <div class="carousel-indicators">
+                        <% forecast.forEach((day, index)=> { %>
+                            <button type="button" data-bs-target="#weatherCarousel" data-bs-slide-to="<%= index %>"
+                                class="<%= index === 0 ? 'active' : '' %> bg-secondary"
+                                aria-current="<%= index === 0 ? 'true' : 'false' %>"
+                                aria-label="Slide <%= index + 1 %>"></button>
+                            <% }) %>
+                    </div>
+
+                    <!-- Carousel content -->
+                    <div class="carousel-inner rounded-5">
+
+                        <!-- First Slide: Current Weather -->
+                        <div class="carousel-item active">
+                            <div class="d-flex justify-content-between align-items-center px-5 gradient-custom"
+                                style="height: 230px">
+                                <div>
+                                    <!-- Today’s weather details -->
+                                    <h2 class="text-dark display-6 mb-0">Today</h2>
+                                    <h2 class="text-dark display-2"><strong>
+                                            <%= forecast[0].temperature %>°C
+                                        </strong></h2>
+                                    <p class="text-dark mb-0">
+                                        Precipitation: <%= forecast[0].precipitation %> |
+                                            Humidity: <%= forecast[0].humidity %> |
+                                                Wind: <%= forecast[0].wind %>
+                                    </p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <!-- Display weather description (Main) and icon -->
+                                    <h2 class="text-dark display-4 mb-0">
+                                        <%= forecast[0].main %>
+                                    </h2>
+                                    <img src="<%= forecast[0].icon %>" alt="Weather Icon" width="150px" class="me-3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Second Slide: Hourly Forecast -->
+                        <div class="carousel-item">
+                            <div class="d-flex justify-content-around text-center align-items-center px-5 bg-body-tertiary"
+                                style="height: 230px">
+                                <% forecast[1].hourly.forEach(hour=> { %>
+                                    <div class="flex-column">
+                                        <p class="small"><strong>
+                                                <%= hour.temperature %>°C
+                                            </strong></p>
+                                        <img src="<%= hour.icon %>" alt="Weather Icon" class="mb-3"
+                                            style="width: 30px;">
+                                        <p class="mb-0"><strong>
+                                                <%= hour.time %>
+                                            </strong></p>
+                                        <p class="mb-0 text-muted" style="font-size: .65rem;">
+                                            <%= hour.period %>
+                                        </p>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+
+                        <!-- Third Slide: 5-Day Forecast -->
+                        <div class="carousel-item">
+                            <div class="d-flex justify-content-around text-center align-items-center px-5 bg-body-tertiary"
+                                style="height: 230px">
+                                <% forecast[2].fiveDay.forEach(day=> { %>
+                                    <div class="flex-column">
+                                        <p class="small"><strong>
+                                                <%= day.temperature %>°C
+                                            </strong></p>
+                                        <img src="<%= day.icon %>" alt="Weather Icon" class="mb-3" style="width: 30px;">
+                                        <p class="mb-0"><strong>
+                                                <%= day.day %>
+                                            </strong></p>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } else { %>
+                    <h3 class="text-center my-7">Not Found!!</h3>
+                    <% } %>
+    </div>
+
+    <!-- Bootstrap JS for carousel functionality -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
