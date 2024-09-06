@@ -8,9 +8,6 @@ const app = express();
 const port = process.env.PORT || 3000;
 const api_key = process.env.API_KEY;
 
-// Serve static files from the "public" directory
-app.use(express.static('public'));
-
 // Default route for rendering the main page without forecast data
 app.get('/', (req, res) => {
     res.render("index.ejs", { forecast: 0 });
@@ -43,7 +40,6 @@ app.get("/weather", async (req, res) => {
             humidity: forecastData[0].main.humidity + '%', // Humidity percentage
             wind: forecastData[0].wind.speed + ' km/h' // Wind speed in km/h
         };
-
 
         // Hourly Forecast (Second Carousel Item)
         const hourlyForecast = forecastData.slice(0, 5).map(item => {
